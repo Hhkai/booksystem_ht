@@ -31,6 +31,7 @@ def insertbook(client, namespace, ind, name, author, editor):
             'insert into books values ("%s", "%s", "%s", "%s")' % (times, ind, "author", author))
     res = client.hql_query(namespace, 
             'insert into books values ("%s", "%s", "%s", "%s")' % (times, ind, "editor", editor))
+    return "successfully inserted\n"
 
 def findbookbyname(client, namespace, name):
     mess = ''
@@ -56,6 +57,7 @@ def findbookbyauthor(client, namespace, author):
 
 def deletebook(client, namespace, ind):
     res = client.hql_query(namespace, 'delete * from books where row="%s"' % ind)
+    return "successfully deleted\n"
 
 def insertstudent(client, namespace, ind, name):
     times = time.strftime('%y-%m-%d %H:%M:%S', time.localtime()) # str
@@ -64,9 +66,11 @@ def insertstudent(client, namespace, ind, name):
             'insert into students values ("%s", "%s", "%s", "%s")' % (times, ind, "id", ind))
     res = client.hql_query(namespace, 
             'insert into students values ("%s", "%s", "%s", "%s")' % (times, ind, "name", name))
+    return "successfully inserted\n"
 
-def deletestudent(client, namespace):
+def deletestudent(client, namespace, ind):
     res = client.hql_query(namespace, 'delete * from students where row="%s"' % ind)
+    return "successfully deleted\n"
 
 def insertborrow(client, namespace, stu_id, book_id):
     times = time.strftime('%y-%m-%d %H:%M:%S', time.localtime()) # str
@@ -76,10 +80,18 @@ def insertborrow(client, namespace, stu_id, book_id):
             'insert into borrows values ("%s", "%s", "%s", "%s")' % (times, ind, "stu_id", stu_id))
     res = client.hql_query(namespace, 
             'insert into borrows values ("%s", "%s", "%s", "%s")' % (times, ind, "book_id", book_id))
+    return "successfully inserted\n"
 
 def deleteborrow(client, namespace, stu_id, book_id):
     res = client.hql_query(namespace, 
-            'select * from borrows where stu_id="%s" and book_id="%s"' % (stu_id, bookid))
+            'select * from borrows where stu_id="%s" and book_id="%s"' % (stu_id, book_id))
+    rows = set()
+    for cell in res.cells:
+        rows.add(cell.key.row)
+    for row in rows:
+        res = client.hql_query(namespace, 
+            'delete * from borrows where row="%s"' % row)
+    return "successfully deleted\n"
 
 def allborrows(client, namespace):
     mess = ''
